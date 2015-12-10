@@ -5,7 +5,7 @@ If you don't know what CS:GO Game State Integration is, I suggest you to read [t
 ```javascript
 var CSGameState = require('../index.js');
 
-// The events ar being reffered to like objects
+// The events are being reffered to like objects
 // in this case the function will be called whenever 'player.state.health' changes
 CSGameState.on('player.state.health', function(health, data) {
     // If you need any other information (e.g. money) you can access it in the data object
