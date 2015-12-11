@@ -1,4 +1,4 @@
-var CSGameState = require('../index.js');
+var CSGameState = require('../index.js')();
 
 CSGameState.on('round.bomb', function(bombState, data) {
 	switch(bombState) {

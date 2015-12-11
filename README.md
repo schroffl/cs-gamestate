@@ -1,9 +1,12 @@
 # CS:GO Game Integration (node.js) [![npm version](https://badge.fury.io/js/cs-gamestate.svg)](https://www.npmjs.com/package/cs-gamestate)
 If you don't know what CS:GO Game State Integration is, I suggest you to read [this](https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Game_State_Integration) article published by Valve in their wiki.
 
-## Example I
+## Installation
+To install this package simply run: `npm install cs-gamestate`
+
+## Example
 ```javascript
-var CSGameState = require('../index.js');
+var CSGameState = require('cs-gamestate')(3000, '0.0.0.0'); // The options (port, host) are optional, these are the defaults
 
 // The events are being reffered to like objects
 // in this case the function will be called whenever 'player.state.health' changes
@@ -15,23 +18,9 @@ CSGameState.on('player.state.health', function(health, data) {
 });
 ```
 
-## Example II
+You can also subscribe to any update sent by the client by using
 ```javascript
-var CSGameState = require('../index.js');
-
-CSGameState.on('round.bomb', function(bombState, data) {
-	switch(bombState) {
-        case 'planted':
-            console.log(new Date(), 'The bomb has been planted');
-            break;
-
-        case 'defused':
-            console.log(new Date(), 'The bomb has been defused');
-            break;
-
-        case 'exploded':
-            console.log(new Date(), 'The bomb blew up');
-            break;
-    }
+CSGameState.on('<update>', function(data) {
+	// Crunch the data...
 });
 ```
