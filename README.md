@@ -25,9 +25,16 @@ CSGameState.on('<update>', function(data) {
 });
 ```
 
-## Options
+## <a name="options"></a>Options
 You can specify options when calling cs-gamestate like this `require('cs-gamesate')(options, port, host)`
 
-#### createServer *(true)*
+#### <a name="option-create-server"></a>createServer *(true)*
 If you don't want cs-gamestate to create a server you can set this to `false`.  
-You can then later call `CSGameState.parse(request, response)` passing the HTTPRequest and the HTTPResponse. An example can be found in `test/createServerFalse.js`
+You can then later call [CSGameState.parse](#function-parse) passing a custom parsing function. An example can be found [here](test/createServerFalse.js)
+
+## <a name="functions"></a>Functions
+
+#### <a name="function-parse"></a>.parse(*function*)
+You will need to use this function if you didn't create a server automatically.
+It must be supplied with a parsing function as seen in [test/createServerFalse.js](test/createServerFalse.js).  
+This can be useful if you don't always want to update the state, but only if certain conditions are met.
