@@ -21,7 +21,7 @@ function CSGameIntegration(port, host) {
 		host = arguments[2];
 	}
 
-	this._router = function(req, res) {
+	this._router = function(req, res, parsingFunction) {
 		if(req.method != 'POST') return;
 
 		req.rawBody = '';
@@ -30,7 +30,7 @@ function CSGameIntegration(port, host) {
 			req.rawBody += data.toString();
 		}).on('end', function() {
 			try {
-				req.body = JSON.parse(req.rawBody);
+				req.body = typeof parsingFunction === 'function' ? parsingFunction(req.rawBody) : JSON.parse(req.rawBody);
 			} catch(err) {
 				req.body = {};
 			}
