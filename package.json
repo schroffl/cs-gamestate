@@ -18,7 +18,5 @@
     "url": "https://github.com/schroffl/cs-gamestate/issues"
   },
   "homepage": "https://github.com/schroffl/cs-gamestate#readme",
-  "dependencies": {
-    "express": "^4.13.3"
-  }
+  "dependencies": {}
 }

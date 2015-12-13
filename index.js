@@ -1,17 +1,16 @@
 var http = require('http');
 var util = require('util');
-var express = require('express');
 var EventEmitter = require('events').EventEmitter;
 
 function CSGameIntegration(port, host) {
 	var self = this;
-	this._router = express();
-	this._server = http.createServer(this._router);
 	this._cached = {};
 
 	EventEmitter.call(this);
 
-	this._router.use(function(req, res, next) {
+	this._router = function(req, res) {
+		if(req.method != 'POST') return;
+
 		req.rawBody = '';
 
 		req.on('data', function(data) {
@@ -19,22 +18,22 @@ function CSGameIntegration(port, host) {
 		}).on('end', function() {
 			req.body = JSON.parse(req.rawBody);
 			delete req.rawBody;
-			next();
+
+			var eventList = {};
+
+			recursiveReplace(self._cached, req.body, null, function(key, newValue, oldValue, path) {
+				eventList[(path.join('.') + '.' + key)] = [newValue, oldValue];
+			});
+
+			self.emit('<update>', self._cached)
+			for(var event in eventList) self.emit(event, eventList[event][0], eventList[event][1], self._cached);
+
+			res.writeHead(200, {'Content-Type': 'text/plain'});
+			res.end();
 		});
-	});
+	}
 
-	this._router.post('/', function(req, res) {
-		var eventList = {};
-
-		recursiveReplace(self._cached, req.body, null, function(key, newValue, oldValue, path) {
-			eventList[(path.join('.') + '.' + key)] = [newValue, oldValue];
-		});
-
-		self.emit('<update>', self._cached)
-		for(var event in eventList) self.emit(event, eventList[event][0], eventList[event][1], self._cached);
-		res.status(200).end();
-	});
-
+	this._server = http.createServer(this._router);
 	this._server.listen(port || 3000, host || '0.0.0.0');
 	return this;
 }
@@ -48,7 +47,7 @@ function recursiveReplace(curr, repl, path, callbackFunction) {
 
 				if(typeof repl[key] == 'object') {
 					newPath.push(key);
-					
+
 					if(typeof curr[key] == 'object') {
 						recursiveReplace(curr[key], repl[key], newPath, callbackFunction);
 					} else if(typeof curr[key] != 'object') {
