@@ -1,3 +1,5 @@
+"use strict";
+
 var http = require('http');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
@@ -9,50 +11,49 @@ function CSGameIntegration(port, host) {
 		'createServer': true
 	};
 
-	CSGameIntegration.prototype.parse = function() {
-		this._router.apply(this, arguments);
+	CSGameIntegration.prototype.parse = function(parsingFunction) {
+		parsingFunction(function(parsedBody) {
+			if(typeof parsedBody !== 'object') return;
+
+			var eventList = {};
+			recursiveReplace(self._cached, parsedBody, null, function(key, newValue, oldValue, path) {
+				eventList[(path.join('.') + '.' + key)] = [newValue, oldValue];
+			});
+
+			self.emit('<update>', self._cached)
+			for(var event in eventList) self.emit(event, eventList[event][0], eventList[event][1], self._cached);
+		});
 	}
 
 	EventEmitter.call(this);
-
+	
 	if(typeof arguments[0] == 'object') {
 		for(var prop in arguments[0]) this._config[prop] = arguments[0][prop];
 		port = arguments[1];
 		host = arguments[2];
 	}
 
-	this._router = function(req, res, parsingFunction) {
-		if(req.method != 'POST') return;
-
-		req.rawBody = '';
-
-		req.on('data', function(data) {
-			req.rawBody += data.toString();
-		}).on('end', function() {
-			try {
-				req.body = typeof parsingFunction === 'function' ? parsingFunction(req.rawBody) : JSON.parse(req.rawBody);
-			} catch(err) {
-				req.body = {};
-			}
-
-			var eventList = {};
-
-			recursiveReplace(self._cached, req.body, null, function(key, newValue, oldValue, path) {
-				eventList[(path.join('.') + '.' + key)] = [newValue, oldValue];
-			});
-
-			self.emit('<update>', self._cached)
-			for(var event in eventList) self.emit(event, eventList[event][0], eventList[event][1], self._cached);
-
-			res.writeHead(200, {'Content-Type': 'text/plain'});
-			res.end();
-		});
-	}
-
 	if(this._config.createServer) {
-		this._server = http.createServer(this._router);
-		this._server.listen(port || 3000, host || '0.0.0.0');
+		this._server = http.createServer(function(req, res) {
+			this.parse(function(next) {
+				req.on('data', function(data) {
+					req.rawBody += data.toString();
+				}).on('end', function() {
+					try {
+						req.body = JSON.parse(req.rawBody);
+					} catch(err) {
+						req.body = {};
+					}
+
+					next(req.body);
+					res.writeHead(200, {'Content-Type': 'text/plain'});
+					res.end();
+				});
+
+			});
+		}).listen(port || 3000, host || '0.0.0.0');
 	}
+
 	return this;
 }
 
