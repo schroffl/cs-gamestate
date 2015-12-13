@@ -9,8 +9,8 @@ function CSGameIntegration(port, host) {
 		'createServer': true
 	};
 
-	CSGameIntegration.prototype.parse = function(req, res) {
-		this._router(req, res);
+	CSGameIntegration.prototype.parse = function() {
+		this._router(arguments);
 	}
 
 	EventEmitter.call(this);
