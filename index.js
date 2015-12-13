@@ -6,7 +6,8 @@ function CSGameIntegration(port, host) {
 	var self = this;
 	this._cached = {};
 	this._config = {
-		'createServer': true
+		'createServer': true,
+		'handleRequest': true
 	};
 
 	CSGameIntegration.prototype.parse = function(req, res) {
@@ -24,29 +25,37 @@ function CSGameIntegration(port, host) {
 	this._router = function(req, res) {
 		if(req.method != 'POST') return;
 
-		req.rawBody = '';
+		if(this._config.handleRequest) {
+			req.rawBody = '';
 
-		req.on('data', function(data) {
-			req.rawBody += data.toString();
-		}).on('end', function() {
-			try {
-				req.body = JSON.parse(req.rawBody);
-			} catch(err) {
-				req.body = {};
-			}
+			req.on('data', function(data) {
+				req.rawBody += data.toString();
+			}).on('end', function() {
+				try {
+					req.body = JSON.parse(req.rawBody);
+				} catch(err) {
+					req.body = {};
+				}
 
-			var eventList = {};
+				emitEvents(req.body);
 
-			recursiveReplace(self._cached, req.body, null, function(key, newValue, oldValue, path) {
-				eventList[(path.join('.') + '.' + key)] = [newValue, oldValue];
+				res.writeHead(200, {'Content-Type': 'text/plain'});
+				res.end();
 			});
+		} else {
+			emitEvents(req);
+		}
+	}
+	
+	function emitEvents(body) {
+		var eventList = {};
 
-			self.emit('<update>', self._cached)
-			for(var event in eventList) self.emit(event, eventList[event][0], eventList[event][1], self._cached);
-
-			res.writeHead(200, {'Content-Type': 'text/plain'});
-			res.end();
+		recursiveReplace(self._cached, body, function(key, newValue, oldValue, path) {
+			eventList[(path.join('.') + '.' + key)] = [newValue, oldValue];
 		});
+
+		self.emit('<update>', self._cached)
+		for(var event in eventList) self.emit(event, eventList[event][0], eventList[event][1], self._cached);
 	}
 
 	if(this._config.createServer) {

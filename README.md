@@ -31,3 +31,7 @@ You can specify options when calling cs-gamestate like this `require('cs-gamesat
 #### createServer *(true)*
 If you don't want cs-gamestate to create a server you can set this to `false`.  
 You can then later call `CSGameState.parse(request, response)` passing the HTTPRequest and the HTTPResponse. An example can be found in `test/createServerFalse.js`
+
+#### handleRequest *(true)*
+Specifies whether cs-gamestate should parse the HTTP-Body itself.  
+If you parse the JSON and want to pass it an Object set this option to `false`
