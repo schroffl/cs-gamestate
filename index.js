@@ -10,7 +10,7 @@ function CSGameIntegration(port, host) {
 	};
 
 	CSGameIntegration.prototype.parse = function() {
-		this._router(arguments);
+		this._router.apply(this, arguments);
 	}
 
 	EventEmitter.call(this);
