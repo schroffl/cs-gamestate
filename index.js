@@ -5,8 +5,21 @@ var EventEmitter = require('events').EventEmitter;
 function CSGameIntegration(port, host) {
 	var self = this;
 	this._cached = {};
+	this._config = {
+		'createServer': true
+	};
+
+	CSGameIntegration.prototype.parse = function(req, res) {
+		this._router(req, res);
+	}
 
 	EventEmitter.call(this);
+
+	if(typeof arguments[0] == 'object') {
+		for(var prop in arguments[0]) this._config[prop] = arguments[0][prop];
+		port = arguments[1];
+		host = arguments[2];
+	}
 
 	this._router = function(req, res) {
 		if(req.method != 'POST') return;
@@ -16,8 +29,11 @@ function CSGameIntegration(port, host) {
 		req.on('data', function(data) {
 			req.rawBody += data.toString();
 		}).on('end', function() {
-			req.body = JSON.parse(req.rawBody);
-			delete req.rawBody;
+			try {
+				req.body = JSON.parse(req.rawBody);
+			} catch(err) {
+				req.body = {};
+			}
 
 			var eventList = {};
 
@@ -33,8 +49,10 @@ function CSGameIntegration(port, host) {
 		});
 	}
 
-	this._server = http.createServer(this._router);
-	this._server.listen(port || 3000, host || '0.0.0.0');
+	if(this._config.createServer) {
+		this._server = http.createServer(this._router);
+		this._server.listen(port || 3000, host || '0.0.0.0');
+	}
 	return this;
 }
 
