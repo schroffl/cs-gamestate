@@ -2,7 +2,9 @@
 If you don't know what CS:GO Game State Integration is, I suggest you to read up on [this article](https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Game_State_Integration) published by Valve in their wiki.
 
 ## Installation
-To install this package simply run: `npm install cs-gamestate`
+```javascript
+npm install cs-gamestate
+```
 
 ## Example
 ```javascript
@@ -11,10 +13,10 @@ var CSGameState = require('cs-gamestate')(3000, '0.0.0.0'); // The options (port
 // The events ar being reffered to like objects
 // in this case the function will be called whenever 'player.state.health' changes
 CSGameState.on('player.state.health', function(health, oldValue, data) {
-    // If you need any other information (e.g. money) you can access it in the data object
-    // In the case of the players money that would be 'data.player.state.money'
+    	// If you need any other information (e.g. money) you can access it in the data object
+    	// In the case of the players money that would be 'data.player.state.money'
 	console.log('Health of', data.player.name, 'has changed from', oldValue, 'to', health);
-    // OUTPUT: Health of Hansiiii has changed from 100 to 72
+    	// OUTPUT: Health of Hansiiii has changed from 100 to 72
 });
 ```
 
@@ -30,7 +32,7 @@ You can specify options when calling cs-gamestate like this `require('cs-gamesat
 
 #### <a name="option-create-server"></a>createServer *(true)*
 If you don't want cs-gamestate to create a server you can set this to `false`.  
-You can then later call [CSGameState.parse](#function-parse) passing a custom parsing function. An example can be found [here](test/createServerFalse.js)
+You can then later call [CSGameState.parse](#function-parse) passing an object. An example can be found [here](test/createServerFalse.js)
 
 ## <a name="functions"></a>Functions
 
