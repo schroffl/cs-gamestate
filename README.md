@@ -34,7 +34,7 @@ You can then later call [CSGameState.parse](#function-parse) passing a custom pa
 
 ## <a name="functions"></a>Functions
 
-#### <a name="function-parse"></a>.parse(*function*)
+#### <a name="function-parse"></a>.parse(*object*)
 You will need to use this function if you didn't create a server automatically.
-It must be supplied with a parsing function as seen in [test/createServerFalse.js](test/createServerFalse.js).  
+It must be supplied with an object as seen in [test/createServerFalse.js](test/createServerFalse.js).  
 This can be useful if you don't always want to update the state, but only if certain conditions are met.
