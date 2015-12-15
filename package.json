@@ -1,6 +1,6 @@
 {
   "name": "cs-gamestate",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Node module for Counter-Strike: Global Offensive Game State Integration",
   "main": "index.js",
   "scripts": {
