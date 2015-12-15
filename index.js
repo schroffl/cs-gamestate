@@ -11,22 +11,18 @@ function CSGameIntegration(port, host) {
 		'createServer': true
 	};
 
-	CSGameIntegration.prototype.parse = function(parsingFunction) {
-		parsingFunction(function(parsedBody) {
-			if(typeof parsedBody !== 'object') return;
-
-			var eventList = {};
-			recursiveReplace(self._cached, parsedBody, null, function(key, newValue, oldValue, path) {
-				eventList[(path.join('.') + '.' + key)] = [newValue, oldValue];
-			});
-
-			self.emit('<update>', self._cached)
-			for(var event in eventList) self.emit(event, eventList[event][0], eventList[event][1], self._cached);
+	CSGameIntegration.prototype.parse = function(replacementData) {
+		var eventList = {};
+		recursiveReplace(self._cached, replacementData, null, function(key, newValue, oldValue, path) {
+			eventList[(path.join('.') + '.' + key)] = [newValue, oldValue];
 		});
+
+		self.emit('<update>', self._cached)
+		for(var event in eventList) self.emit(event, eventList[event][0], eventList[event][1], self._cached);
 	}
 
 	EventEmitter.call(this);
-	
+
 	if(typeof arguments[0] == 'object') {
 		for(var prop in arguments[0]) this._config[prop] = arguments[0][prop];
 		port = arguments[1];
@@ -35,21 +31,18 @@ function CSGameIntegration(port, host) {
 
 	if(this._config.createServer) {
 		this._server = http.createServer(function(req, res) {
-			this.parse(function(next) {
-				req.on('data', function(data) {
-					req.rawBody += data.toString();
-				}).on('end', function() {
-					try {
-						req.body = JSON.parse(req.rawBody);
-					} catch(err) {
-						req.body = {};
-					}
+			req.on('data', function(data) {
+				req.rawBody += data.toString();
+			}).on('end', function() {
+				try {
+					req.body = JSON.parse(req.rawBody);
+				} catch(err) {
+					req.body = {};
+				}
 
-					next(req.body);
-					res.writeHead(200, {'Content-Type': 'text/plain'});
-					res.end();
-				});
-
+				this.parse(req.body);
+				res.writeHead(200, {'Content-Type': 'text/plain'});
+				res.end();
 			});
 		}).listen(port || 3000, host || '0.0.0.0');
 	}
@@ -74,7 +67,7 @@ function recursiveReplace(curr, repl, path, callbackFunction) {
 						recursiveReplace(curr[key], repl[key], newPath, callbackFunction);
 					}
 				} else {
-					callbackFunction(key, repl[key], curr[key],newPath);
+					callbackFunction(key, repl[key], curr[key], newPath);
 					curr[key] = repl[key];
 				}
 			} else curr[key] = repl[key];
