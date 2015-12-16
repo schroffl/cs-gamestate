@@ -2,6 +2,7 @@
 
 var http = require('http');
 var util = require('util');
+var differ = require('object-differ');
 var EventEmitter = require('events').EventEmitter;
 
 function CSGameIntegration(port, host) {
@@ -10,10 +11,10 @@ function CSGameIntegration(port, host) {
 	this._config = {
 		'createServer': true
 	};
-
+	
 	CSGameIntegration.prototype.parse = function(replacementData) {
 		var eventList = {};
-		recursiveReplace(self._cached, replacementData, null, function(key, newValue, oldValue, path) {
+		differ(self._cached, replacementData, function(key, newValue, oldValue, path) {
 			eventList[(path.join('.') + '.' + key)] = [newValue, oldValue];
 		});
 
@@ -32,7 +33,7 @@ function CSGameIntegration(port, host) {
 	if(this._config.createServer) {
 		this._server = http.createServer(function(req, res) {
 			req.on('data', function(data) {
-				req.rawBody += data.toString();
+				req.rawBody = (req.rawBody || '') + data.toString();
 			}).on('end', function() {
 				try {
 					req.body = JSON.parse(req.rawBody);
@@ -40,7 +41,7 @@ function CSGameIntegration(port, host) {
 					req.body = {};
 				}
 
-				this.parse(req.body);
+				self.parse(req.body);
 				res.writeHead(200, {'Content-Type': 'text/plain'});
 				res.end();
 			});
@@ -50,33 +51,16 @@ function CSGameIntegration(port, host) {
 	return this;
 }
 
-function recursiveReplace(curr, repl, path, callbackFunction) {
-	if(curr != repl) {
-		for(var key in repl) {
-			if(curr[key] != repl[key]) {
-				if(!Array.isArray(path)) path = [];
-				var newPath = path.slice();
-
-				if(typeof repl[key] == 'object') {
-					newPath.push(key);
-
-					if(typeof curr[key] == 'object') {
-						recursiveReplace(curr[key], repl[key], newPath, callbackFunction);
-					} else if(typeof curr[key] != 'object') {
-						curr[key] = {};
-						recursiveReplace(curr[key], repl[key], newPath, callbackFunction);
-					}
-				} else {
-					callbackFunction(key, repl[key], curr[key], newPath);
-					curr[key] = repl[key];
-				}
-			} else curr[key] = repl[key];
-		}
-	}
-}
-
 util.inherits(CSGameIntegration, EventEmitter);
 
-module.exports = function(port, host) {
-	return (new CSGameIntegration(port, host));
+module.exports = function() {
+	var temp = function() {};
+	var inst, ret;
+
+	temp.prototype = CSGameIntegration.prototype;
+	inst = new temp;
+
+	ret = CSGameIntegration.apply(inst, arguments);
+
+	return ret;
 };
