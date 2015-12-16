@@ -11,17 +11,17 @@ function CSGameIntegration(port, host) {
 	this._config = {
 		'createServer': true
 	};
-	
+
 	CSGameIntegration.prototype.parse = function(replacementData) {
 		var eventList = {};
 		differ(self._cached, replacementData, function(key, newValue, oldValue, path) {
 			eventList[(path.join('.') + '.' + key)] = [newValue, oldValue];
-		}, true);
+		}, true, true);
 
 		self.emit('<update>', self._cached)
 		for(var event in eventList) self.emit(event, eventList[event][0], eventList[event][1], self._cached);
 	}
-
+	
 	EventEmitter.call(this);
 
 	if(typeof arguments[0] == 'object') {
