@@ -16,7 +16,7 @@ function CSGameIntegration(port, host) {
 		var eventList = {};
 		differ(self._cached, replacementData, function(key, newValue, oldValue, path) {
 			eventList[(path.join('.') + '.' + key)] = [newValue, oldValue];
-		});
+		}, true);
 
 		self.emit('<update>', self._cached)
 		for(var event in eventList) self.emit(event, eventList[event][0], eventList[event][1], self._cached);
