@@ -18,5 +18,7 @@
     "url": "https://github.com/schroffl/cs-gamestate/issues"
   },
   "homepage": "https://github.com/schroffl/cs-gamestate#readme",
-  "dependencies": {}
+  "dependencies": {
+    "object-differ": "^0.1.1"
+  }
 }
