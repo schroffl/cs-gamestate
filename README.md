@@ -7,7 +7,7 @@ npm install cs-gamestate
 ```
 
 ## Bomb Timer
-Valve has released an [update](http://blog.counter-strike.net/index.php/2015/12/13409/) on the 17th of December 2015, that delays the event of the bomb being planted by a random amount of time. If you subscribe to round.bomb, **be aware of this!**
+Valve has released an [update](http://blog.counter-strike.net/index.php/2015/12/13409/) on the 17th of December 2015. The event of the bomb being planted is now delayed by a random amount of time. If you subscribe to `round.bomb`, **be aware of this!**
 
 ## Example
 ```javascript
