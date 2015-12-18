@@ -14,6 +14,10 @@
   },
   "author": "schroffl",
   "license": "MIT",
+  "keyword": [
+    "csgo",
+    "counter-strike"
+  ],
   "bugs": {
     "url": "https://github.com/schroffl/cs-gamestate/issues"
   },
