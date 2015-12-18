@@ -6,6 +6,9 @@ If you don't know what CS:GO Game State Integration is, I suggest you to read up
 npm install cs-gamestate
 ```
 
+## Bomb Timer
+Valve has released an [update](http://blog.counter-strike.net/index.php/2015/12/13409/) on the 17th of December 2015, that delays the event of the bomb being planted by a random amount of time. If you subscribe to round.bomb, **be aware of this!**
+
 ## Example
 ```javascript
 var CSGameState = require('cs-gamestate')(3000, '0.0.0.0'); // The options (port, host) are optional, these are the defaults
