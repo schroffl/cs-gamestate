@@ -11,11 +11,11 @@ Valve has released an [update](http://blog.counter-strike.net/index.php/2015/12/
 
 ## Example
 ```javascript
-var CSGameState = require('cs-gamestate')(3000, '0.0.0.0'); // The options (port, host) are optional, these are the defaults
+const CSGameState = new (require('cs-gamestate'))(3000, '0.0.0.0'); // The options (port, host) are optional, these are the defaults
 
 // The events ar being reffered to like objects
 // in this case the function will be called whenever 'player.state.health' changes
-CSGameState.on('player.state.health', function(health, oldValue, data) {
+CSGameState.on('player.state.health', (health, oldValue, data) => {
 	// If you need any other information (e.g. money) you can access it in the data object
 	// In the case of the players money that would be 'data.player.state.money'
 	console.log('Health of', data.player.name, 'has changed from', oldValue, 'to', health);
@@ -25,7 +25,7 @@ CSGameState.on('player.state.health', function(health, oldValue, data) {
 
 You can also subscribe to any update sent by the client by using
 ```javascript
-CSGameState.on('<update>', function(data) {
+CSGameState.on('<update>', data => {
 	// Crunch the data...
 });
 ```
@@ -35,11 +35,10 @@ You can specify options when calling cs-gamestate like this `require('cs-gamesat
 
 #### <a name="option-create-server"></a>createServer *(true)*
 If you don't want cs-gamestate to create a server you can set this to `false`.  
-You can then later call [CSGameState.parse](#function-parse) passing an object. An example can be found [here](test/createServerFalse.js)
+You can then later call [CSGameState.parse](#method-parse) passing an object.
 
-## <a name="functions"></a>Functions
+## <a name="methods"></a>Methods
 
-#### <a name="function-parse"></a>.parse(*object*)
+#### <a name="methods-parse"></a>.parse(*object*)
 You will need to use this function if you didn't create a server automatically.
-It must be supplied with an object as seen in [test/createServerFalse.js](test/createServerFalse.js).  
 This can be useful if you don't always want to update the state, but only if certain conditions are met.
