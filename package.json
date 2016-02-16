@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/schroffl/cs-gamestate#readme",
   "dependencies": {
-    "object-differ": "^0.3.0"
+    "object-differ": "^0.3.1"
   }
 }
