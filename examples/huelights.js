@@ -1,13 +1,14 @@
 /* This sample code will fade the color of your HUE Lights from green to red depending on your health */
 // Dependencies:
-// - cs-gamtestate
+// - cs-gamestate
 // - request
 
-var CSGameState = require('cs-gamestate')(3000, '0.0.0.0');
-var request = require('request');
+const CSGameState = new (require('cs-gamestate'))(3000, '0.0.0.0');
+const request = require('request');
 
 CSGameState.on('player.state.health', function(health) {
-	var hue = health / 100 * 21845;
+	// Fade the color from GREEN to RED according to the players health
+	const hue = health / 100 * 21845;
     
 	request({
 		'method': 'PUT',
