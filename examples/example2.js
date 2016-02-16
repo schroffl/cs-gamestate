@@ -1,4 +1,4 @@
-var CSGameState = require('../index.js')();
+const CSGameState = new (require('../index.js'))();
 
 CSGameState.on('round.bomb', function(bombState, data) {
 	switch(bombState) {
