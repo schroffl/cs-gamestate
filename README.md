@@ -13,11 +13,13 @@ Valve has released an [update](http://blog.counter-strike.net/index.php/2015/12/
 ```javascript
 const CSGameState = new (require('cs-gamestate'))(3000, '0.0.0.0'); // The options (port, host) are optional, these are the defaults
 
-// The events ar being reffered to like objects
-// in this case the function will be called whenever 'player.state.health' changes
+// The events are being reffered to like objects.
+// In this case the function will be called whenever 'player.state.health' (the players health) changes
+
 CSGameState.on('player.state.health', (health, oldValue, data) => {
 	// If you need any other information (e.g. money) you can access it in the data object
-	// In the case of the players money that would be 'data.player.state.money'
+	// For the players money that would be 'data.player.state.money'
+
 	console.log('Health of', data.player.name, 'has changed from', oldValue, 'to', health);
 	// OUTPUT: Health of Hansiiii has changed from 100 to 72
 });
